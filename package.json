@@ -1,0 +1,24 @@
+{
+  "name": "currency-converter-extension",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:scripts": "vite build --config vite.config.scripts.ts",
+    "build:pages": "vite build --config vite.config.pages.ts",
+    "build": "tsc && npm run build:scripts && npm run build:pages",
+    "dev": "npm run build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.0"
+  }
+}
