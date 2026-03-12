@@ -54,11 +54,14 @@ export function displayConversions(
       el.appendChild(tooltip);
     } else {
       // Replacement mode: insert a badge immediately after the container
+      const convertedText = getElementConvertedText(converted, el);
+      if (!convertedText) continue;
+
       const badge = document.createElement("span");
       badge.className = `${WRAPPER_CLASS} cc-ext-el-badge`;
       badge.setAttribute(ORIGINAL_ATTR, price.originalText);
       badge.setAttribute(CURRENCY_ATTR, price.currency);
-      badge.textContent = " → " + converted.map((c) => c.formatted).join(" / ");
+      badge.textContent = ` -> ${convertedText}`;
       el.insertAdjacentElement("afterend", badge);
     }
   }
@@ -125,6 +128,38 @@ export function displayConversions(
 
     parent.setAttribute(PROCESSED_ATTR, "true");
     parent.replaceChild(fragment, textNode);
+  }
+}
+
+function getElementConvertedText(
+  converted: ConvertedPrice[],
+  el: Element,
+): string {
+  const full = converted.map((c) => c.formatted).join(" / ");
+  if (!full) return "";
+
+  // Variant swatches and compact selectors are often too narrow,
+  // so use a short value to avoid rendering only the arrow prefix.
+  const width = (el as HTMLElement).getBoundingClientRect().width;
+  const isNarrow = width > 0 && width < 180;
+  if (!isNarrow) return full;
+
+  const primary = converted[0];
+  if (!primary) return full;
+
+  return formatCompactCurrency(primary.amount, primary.targetCurrency);
+}
+
+function formatCompactCurrency(amount: number, currencyCode: string): string {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currencyCode,
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(amount);
+  } catch {
+    return `${currencyCode} ${amount.toFixed(1)}`;
   }
 }
 
