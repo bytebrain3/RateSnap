@@ -15,9 +15,59 @@ export function displayConversions(
   base: string,
   mode: DisplayMode,
 ): void {
+  // ── Element-level prices (container scan) ─────────────────────────────
+  // These are prices spread across multiple child DOM nodes; we attach the
+  // tooltip/badge directly to the container element.
+  for (const price of prices) {
+    if (!price.element) continue;
+    const el = price.element;
+    if (el.hasAttribute(PROCESSED_ATTR)) continue;
+
+    const converted = convertToMultiple(
+      price.amount,
+      price.currency,
+      targetCurrencies,
+      rates,
+      base,
+    );
+    if (!converted.length) continue;
+
+    el.setAttribute(PROCESSED_ATTR, "true");
+
+    if (mode === "tooltip") {
+      el.classList.add("cc-ext-has-tooltip");
+      // Ensure a stacking context so the absolute tooltip is positioned correctly
+      if (window.getComputedStyle(el).position === "static") {
+        (el as HTMLElement).style.position = "relative";
+      }
+      const tooltip = document.createElement("span");
+      tooltip.className = TOOLTIP_CLASS;
+      tooltip.innerHTML = converted
+        .map(
+          (c) =>
+            `<span class="cc-ext-tooltip-row">` +
+            `<span class="cc-ext-tooltip-currency">${c.targetCurrency}</span>` +
+            `<span class="cc-ext-tooltip-amount">${c.formatted}</span>` +
+            `</span>`,
+        )
+        .join("");
+      el.appendChild(tooltip);
+    } else {
+      // Replacement mode: insert a badge immediately after the container
+      const badge = document.createElement("span");
+      badge.className = `${WRAPPER_CLASS} cc-ext-el-badge`;
+      badge.setAttribute(ORIGINAL_ATTR, price.originalText);
+      badge.setAttribute(CURRENCY_ATTR, price.currency);
+      badge.textContent = " → " + converted.map((c) => c.formatted).join(" / ");
+      el.insertAdjacentElement("afterend", badge);
+    }
+  }
+
+  // ── Text-node level prices ─────────────────────────────────────────────
   // Group by text node (process from end to start to preserve offsets)
   const byNode = new Map<Text, DetectedPrice[]>();
   for (const price of prices) {
+    if (!price.node) continue; // skip element-level
     const list = byNode.get(price.node) || [];
     list.push(price);
     byNode.set(price.node, list);
@@ -123,8 +173,20 @@ function createPriceElement(
 }
 
 export function clearConversions(root: Element = document.body): void {
-  // Restore original text for all processed elements
-  const wrappers = root.querySelectorAll(`.${WRAPPER_CLASS}`);
+  // Remove element-level tooltip spans (appended as children)
+  root.querySelectorAll(".cc-ext-has-tooltip").forEach((el) => {
+    el.querySelector(`.${TOOLTIP_CLASS}`)?.remove();
+    el.classList.remove("cc-ext-has-tooltip");
+    (el as HTMLElement).style.position = "";
+  });
+
+  // Remove element-level replacement badges (inserted after the container)
+  root.querySelectorAll(".cc-ext-el-badge").forEach((el) => el.remove());
+
+  // Restore text-node level conversions
+  const wrappers = root.querySelectorAll(
+    `.${WRAPPER_CLASS}:not(.cc-ext-el-badge)`,
+  );
   wrappers.forEach((wrapper) => {
     const original = wrapper.getAttribute(ORIGINAL_ATTR);
     if (original) {

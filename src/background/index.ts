@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 // Set up periodic rate refresh alarm
 async function setupAlarm() {
-  const settings = await getSettings();
+  const settings = await getSettings(); // Get current settings to determine refresh interval
   await chrome.alarms.clear(ALARM_NAME);
   chrome.alarms.create(ALARM_NAME, {
     periodInMinutes: settings.refreshInterval,

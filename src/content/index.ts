@@ -1,5 +1,5 @@
 import type { CachedRates, Settings, DisplayMode } from "../lib/types";
-import { detectPrices } from "./priceDetector";
+import { detectPrices, detectPricesInContainers } from "./priceDetector";
 import { displayConversions, clearConversions } from "./display";
 
 let currentSettings: Settings | null = null;
@@ -39,16 +39,27 @@ function scanAndConvert(root: Node) {
   if (!currentSettings || !currentRates) return;
   if (currentSettings.targetCurrencies.length === 0) return;
 
-  const prices = detectPrices(root, currentSettings.dollarDefault);
-  if (prices.length === 0) return;
+  const { dollarDefault, targetCurrencies, displayMode } = currentSettings;
+  const { rates, base } = currentRates;
 
-  displayConversions(
-    prices,
-    currentSettings.targetCurrencies,
-    currentRates.rates,
-    currentRates.base,
-    currentSettings.displayMode,
-  );
+  // Pass 1 — container scan (must run first so it claims split-price elements
+  // before the text-node walker processes hidden accessibility siblings inside them)
+  const containerPrices = detectPricesInContainers(root, dollarDefault);
+  if (containerPrices.length > 0) {
+    displayConversions(
+      containerPrices,
+      targetCurrencies,
+      rates,
+      base,
+      displayMode,
+    );
+  }
+
+  // Pass 2 — text-node scan (skips nodes inside already-processed containers)
+  const textPrices = detectPrices(root, dollarDefault);
+  if (textPrices.length > 0) {
+    displayConversions(textPrices, targetCurrencies, rates, base, displayMode);
+  }
 }
 
 function startObserver() {

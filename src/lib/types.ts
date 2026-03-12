@@ -1,5 +1,6 @@
 export interface DetectedPrice {
-  node: Text;
+  node: Text | null; // null for element-level detections
+  element?: Element; // set when the price spans multiple DOM nodes
   currency: string;
   amount: number;
   originalText: string;
