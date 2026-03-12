@@ -23,7 +23,7 @@ export type DisplayMode = "tooltip" | "replacement";
 
 export interface Settings {
   apiKey: string;
-  homeCurrency: string;
+  homeCurrencies: string[];
   targetCurrencies: string[];
   displayMode: DisplayMode;
   refreshInterval: number; // minutes
@@ -35,7 +35,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   apiKey: "",
-  homeCurrency: "USD",
+  homeCurrencies: ["USD"],
   targetCurrencies: ["EUR", "GBP"],
   displayMode: "tooltip",
   refreshInterval: 60,

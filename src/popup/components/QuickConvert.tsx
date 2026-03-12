@@ -5,17 +5,17 @@ import { formatCurrency } from "../../content/converter";
 
 interface Props {
   rates: CachedRates | null;
-  homeCurrency: string;
+  homeCurrencies: string[];
   targetCurrencies: string[];
 }
 
 export default function QuickConvert({
   rates,
-  homeCurrency,
+  homeCurrencies,
   targetCurrencies,
 }: Props) {
   const [amount, setAmount] = useState("");
-  const [from, setFrom] = useState(homeCurrency);
+  const [from, setFrom] = useState(homeCurrencies[0] || "USD");
   const [to, setTo] = useState(targetCurrencies[0] || "EUR");
   const [fromSearch, setFromSearch] = useState("");
   const [toSearch, setToSearch] = useState("");

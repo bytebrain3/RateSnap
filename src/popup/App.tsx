@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Settings, CachedRates, DisplayMode } from "../lib/types";
-import { DEFAULT_SETTINGS, CURRENCY_LIST } from "../lib/types";
+import { DEFAULT_SETTINGS } from "../lib/types";
 import CurrencySelector from "./components/CurrencySelector";
 import DisplayToggle from "./components/DisplayToggle";
 import StatusBar from "./components/StatusBar";
@@ -17,7 +17,10 @@ export default function App() {
       chrome.runtime.sendMessage({ type: "GET_RATES" }),
     ]).then(([settingsResp, ratesResp]) => {
       if (settingsResp?.success)
-        setSettings(settingsResp.data as unknown as Settings);
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...(settingsResp.data as unknown as Settings),
+        });
       if (ratesResp?.success) setRates(ratesResp.data as CachedRates);
       setLoading(false);
     });
@@ -89,22 +92,12 @@ export default function App() {
 
       <section className="popup-section">
         <h3>Convert From</h3>
-        <div className="from-currency-display">
-          <select
-            className="from-currency-select"
-            value={settings.homeCurrency}
-            onChange={(e) => updateSettings({ homeCurrency: e.target.value })}
-          >
-            {CURRENCY_LIST.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.symbol} {c.code} — {c.name}
-              </option>
-            ))}
-          </select>
-          <p className="from-hint">
-            Default source currency for detecting prices
-          </p>
-        </div>
+        <CurrencySelector
+          selected={settings.homeCurrencies}
+          onChange={(currencies: string[]) =>
+            updateSettings({ homeCurrencies: currencies })
+          }
+        />
       </section>
 
       <section className="popup-section">
@@ -121,7 +114,7 @@ export default function App() {
         <h3>Quick Convert</h3>
         <QuickConvert
           rates={rates}
-          homeCurrency={settings.homeCurrency}
+          homeCurrencies={settings.homeCurrencies}
           targetCurrencies={settings.targetCurrencies}
         />
       </section>

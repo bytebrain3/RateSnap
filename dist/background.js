@@ -23,9 +23,9 @@ async function m(e, t) {
   const s = await f();
   return s && !d(s.timestamp, t) ? s : o(e);
 }
-const y = {
+const p = {
   apiKey: "",
-  homeCurrency: "USD",
+  homeCurrencies: ["USD"],
   targetCurrencies: ["EUR", "GBP"],
   displayMode: "tooltip",
   refreshInterval: 60,
@@ -36,7 +36,7 @@ const y = {
 }, u = "settings";
 async function a() {
   const e = await chrome.storage.sync.get(u);
-  return { ...y, ...e[u] };
+  return { ...p, ...e[u] };
 }
 const c = "refreshRates";
 chrome.runtime.onInstalled.addListener(async (e) => {
@@ -62,11 +62,11 @@ chrome.alarms.onAlarm.addListener(async (e) => {
   }
 });
 chrome.runtime.onMessage.addListener(
-  (e, t, s) => (p(e).then(s).catch((r) => {
+  (e, t, s) => (y(e).then(s).catch((r) => {
     s({ success: !1, error: String(r) });
   }), !0)
 );
-async function p(e) {
+async function y(e) {
   switch (e.type) {
     case "GET_RATES": {
       const t = await a();

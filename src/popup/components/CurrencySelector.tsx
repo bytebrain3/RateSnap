@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { CURRENCY_LIST } from "../../lib/types";
 
 interface Props {
@@ -9,6 +9,21 @@ interface Props {
 export default function CurrencySelector({ selected, onChange }: Props) {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return CURRENCY_LIST;
@@ -34,33 +49,43 @@ export default function CurrencySelector({ selected, onChange }: Props) {
   };
 
   return (
-    <div className="currency-selector">
+    <div className="currency-selector" ref={wrapperRef}>
       {/* Selected tags */}
-      <div className="selected-tags">
-        {selected.map((code) => {
-          const info = CURRENCY_LIST.find((c) => c.code === code);
-          return (
-            <span key={code} className="tag">
-              {info?.symbol} {code}
-              <button className="tag-remove" onClick={() => remove(code)}>
-                ×
-              </button>
-            </span>
-          );
-        })}
-      </div>
+      {selected.length > 0 && (
+        <div className="selected-tags">
+          {selected.map((code) => {
+            const info = CURRENCY_LIST.find((c) => c.code === code);
+            return (
+              <span key={code} className="tag">
+                {info?.symbol} {code}
+                <button className="tag-remove" onClick={() => remove(code)}>
+                  ×
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Search input */}
+      {/* Search input + toggle */}
       <div className="selector-input-wrap">
         <input
           type="text"
-          placeholder="Search currencies..."
+          placeholder={isOpen ? "Search currencies..." : "Add currencies..."}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onFocus={() => setIsOpen(true)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            if (!isOpen) setIsOpen(true);
+          }}
           className="selector-input"
         />
-        <button className="selector-toggle" onClick={() => setIsOpen(!isOpen)}>
+        <button
+          className="selector-toggle"
+          onClick={() => {
+            setIsOpen(!isOpen);
+            if (isOpen) setSearch("");
+          }}
+        >
           {isOpen ? "▲" : "▼"}
         </button>
       </div>

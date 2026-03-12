@@ -38,7 +38,9 @@ const POPULAR_CURRENCIES = [
 export default function SetupWizard({ settings, onComplete }: Props) {
   const [step, setStep] = useState<Step>("apiKey");
   const [apiKey, setApiKey] = useState(settings.apiKey);
-  const [homeCurrency, setHomeCurrency] = useState(settings.homeCurrency);
+  const [homeCurrencies, setHomeCurrencies] = useState<string[]>(
+    settings.homeCurrencies?.length ? settings.homeCurrencies : ["USD"],
+  );
   const [targets, setTargets] = useState<string[]>(settings.targetCurrencies);
   const [displayMode, setDisplayMode] = useState(settings.displayMode);
   const [validating, setValidating] = useState(false);
@@ -62,6 +64,10 @@ export default function SetupWizard({ settings, onComplete }: Props) {
         return;
       }
     }
+    if (step === "homeCurrency" && homeCurrencies.length === 0) {
+      setError("Select at least one source currency");
+      return;
+    }
     if (step === "targetCurrencies" && targets.length === 0) {
       setError("Select at least one target currency");
       return;
@@ -70,7 +76,7 @@ export default function SetupWizard({ settings, onComplete }: Props) {
     if (isLast) {
       onComplete({
         apiKey: apiKey.trim(),
-        homeCurrency,
+        homeCurrencies,
         targetCurrencies: targets,
         displayMode,
       });
@@ -93,6 +99,17 @@ export default function SetupWizard({ settings, onComplete }: Props) {
       setTargets(targets.filter((c) => c !== code));
     } else {
       setTargets([...targets, code]);
+    }
+  };
+
+  const toggleHomeCurrency = (code: string) => {
+    setError("");
+    if (homeCurrencies.includes(code)) {
+      // keep at least one selected
+      if (homeCurrencies.length > 1)
+        setHomeCurrencies(homeCurrencies.filter((c) => c !== code));
+    } else {
+      setHomeCurrencies([...homeCurrencies, code]);
     }
   };
 
@@ -146,20 +163,51 @@ export default function SetupWizard({ settings, onComplete }: Props) {
           <div className="wizard-step">
             <h2>2. Convert From</h2>
             <p>
-              Select the currency you want to convert <strong>from</strong>.
-              This is your default source currency for detecting prices.
+              Select one or more currencies you want to convert{" "}
+              <strong>from</strong>. Pick all currencies you commonly use.
             </p>
-            <select
-              className="wizard-select"
-              value={homeCurrency}
-              onChange={(e) => setHomeCurrency(e.target.value)}
-            >
-              {CURRENCY_LIST.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.symbol} {c.code} — {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="wizard-chips">
+              <div className="chips-label">Popular:</div>
+              <div className="chips-grid">
+                {POPULAR_CURRENCIES.map((code) => {
+                  const info = CURRENCY_LIST.find((c) => c.code === code);
+                  return (
+                    <button
+                      key={code}
+                      className={`chip ${
+                        homeCurrencies.includes(code) ? "selected" : ""
+                      }`}
+                      onClick={() => toggleHomeCurrency(code)}
+                    >
+                      {info?.symbol} {code}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="chips-label" style={{ marginTop: 12 }}>
+                All currencies:
+              </div>
+              <div className="chips-grid chips-all">
+                {CURRENCY_LIST.filter(
+                  (c) => !POPULAR_CURRENCIES.includes(c.code),
+                ).map((c) => (
+                  <button
+                    key={c.code}
+                    className={`chip chip-small ${
+                      homeCurrencies.includes(c.code) ? "selected" : ""
+                    }`}
+                    onClick={() => toggleHomeCurrency(c.code)}
+                  >
+                    {c.symbol} {c.code}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {homeCurrencies.length > 0 && (
+              <div className="wizard-selection">
+                Selected: {homeCurrencies.join(", ")}
+              </div>
+            )}
           </div>
         )}
 

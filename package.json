@@ -1,7 +1,11 @@
 {
   "name": "currency-converter-extension",
   "version": "1.0.0",
+  "description": "A Chrome extension that automatically detects and converts prices on any webpage to your preferred currencies using real-time exchange rates.",
   "private": true,
+  "keywords": ["chrome-extension", "currency-converter", "exchange-rates", "react", "typescript"],
+  "author": "bytebrain3",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build:scripts": "vite build --config vite.config.scripts.ts",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Settings } from "../../lib/types";
 import { CURRENCY_LIST } from "../../lib/types";
+import CurrencySelector from "../../popup/components/CurrencySelector";
 
 interface Props {
   settings: Settings;
@@ -42,18 +43,15 @@ export default function AdvancedSettings({ settings, onUpdate }: Props) {
 
       {/* Convert From */}
       <div className="form-group">
-        <label className="form-label">Convert From (Default Currency)</label>
-        <select
-          className="form-input"
-          value={settings.homeCurrency}
-          onChange={(e) => onUpdate({ homeCurrency: e.target.value })}
-        >
-          {CURRENCY_LIST.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.symbol} {c.code} — {c.name}
-            </option>
-          ))}
-        </select>
+        <label className="form-label">Convert From (Default Currencies)</label>
+        <p className="form-hint">
+          Select all currencies you want to use as source when converting
+          prices.
+        </p>
+        <CurrencySelector
+          selected={settings.homeCurrencies}
+          onChange={(currencies) => onUpdate({ homeCurrencies: currencies })}
+        />
       </div>
 
       {/* Dollar disambiguation */}
@@ -144,6 +142,7 @@ export default function AdvancedSettings({ settings, onUpdate }: Props) {
               onUpdate({
                 isSetupComplete: false,
                 apiKey: "",
+                homeCurrencies: ["USD"],
                 targetCurrencies: ["EUR", "GBP"],
                 displayMode: "tooltip",
                 refreshInterval: 60,

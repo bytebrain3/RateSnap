@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Currency Converter Pro",
   "version": "1.0.0",
-  "description": "Automatically detects and converts prices on any web page to your preferred currencies. Supports 170+ currencies with real-time exchange rates.",
+  "description": "Automatically detects and converts prices on any webpage to your preferred currencies in real time. Supports 50+ currencies with live exchange rates from Open Exchange Rates.",
   "permissions": [
     "storage",
     "activeTab",
