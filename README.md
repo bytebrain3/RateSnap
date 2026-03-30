@@ -2,6 +2,14 @@
 
 A Chrome extension that **automatically detects and converts prices** on any webpage to your preferred currencies using real-time exchange rates.
 
+
+---
+
+
+![Amazon page price Screenshot](assets/image-example.png)
+![Amazon page price Screenshot](assets/image.png)
+
+
 ---
 
 ## Features
@@ -20,6 +28,9 @@ A Chrome extension that **automatically detects and converts prices** on any web
 - **Setup Wizard** — Guided 4-step setup on first install
 
 ---
+
+
+![Settings Screenshot](assets/RateSnap-options.png)
 
 ## Supported Currencies
 
