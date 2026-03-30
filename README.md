@@ -1,4 +1,4 @@
-# 💱 Currency Converter Pro
+# 💱 RateSnap (Currency Converter Pro)
 
 A Chrome extension that **automatically detects and converts prices** on any webpage to your preferred currencies using real-time exchange rates.
 
