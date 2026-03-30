@@ -38,8 +38,8 @@ USD, EUR, GBP, JPY, CNY, INR, BDT, AUD, CAD, CHF, HKD, SGD, SEK, KRW, NOK, NZD, 
 
 ```bash
 # Clone the repository
-git clone https://github.com/bytebrain3/currency-converter-extension.git
-cd currency-converter-extension
+git clone https://github.com/bytebrain3/RateSnap.git
+cd RateSnap
 
 # Install dependencies
 npm install
