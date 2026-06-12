@@ -1,90 +1,107 @@
-const n = "exchangeRates", g = "https://openexchangerates.org/api/latest.json";
-async function o(e) {
-  const t = `${g}?app_id=${encodeURIComponent(e)}`, s = await fetch(t);
-  if (!s.ok) {
-    const h = await s.text();
-    throw new Error(`Failed to fetch rates: ${s.status} ${h}`);
-  }
-  const r = await s.json(), i = {
-    rates: r.rates,
-    timestamp: Date.now(),
-    base: r.base || "USD"
-  };
-  return await chrome.storage.local.set({ [n]: i }), i;
+//#region src/lib/exchangeRates.ts
+var e = "exchangeRates", t = "https://openexchangerates.org/api/latest.json";
+async function n(n) {
+	let r = `${t}?app_id=${encodeURIComponent(n)}`, i = await fetch(r);
+	if (!i.ok) {
+		let e = await i.text();
+		throw Error(`Failed to fetch rates: ${i.status} ${e}`);
+	}
+	let a = await i.json(), o = {
+		rates: a.rates,
+		timestamp: Date.now(),
+		base: a.base || "USD"
+	};
+	return await chrome.storage.local.set({ [e]: o }), o;
 }
-async function f() {
-  return (await chrome.storage.local.get(n))[n] || null;
+async function r() {
+	return (await chrome.storage.local.get(e))[e] || null;
 }
-function d(e, t) {
-  const s = t * 60 * 1e3;
-  return Date.now() - e > s;
+function i(e, t) {
+	let n = t * 60 * 1e3;
+	return Date.now() - e > n;
 }
-async function m(e, t) {
-  const s = await f();
-  return s && !d(s.timestamp, t) ? s : o(e);
+async function a(e, t) {
+	let a = await r();
+	return a && !i(a.timestamp, t) ? a : n(e);
 }
-const p = {
-  apiKey: "",
-  homeCurrencies: ["USD"],
-  targetCurrencies: ["EUR", "GBP"],
-  displayMode: "tooltip",
-  refreshInterval: 60,
-  dollarDefault: "USD",
-  blacklistedSites: [],
-  enableHighlight: !0,
-  isSetupComplete: !1
-}, u = "settings";
-async function a() {
-  const e = await chrome.storage.sync.get(u);
-  return { ...p, ...e[u] };
+//#endregion
+//#region src/lib/types.ts
+var o = {
+	apiKey: "",
+	homeCurrencies: ["USD"],
+	targetCurrencies: ["EUR", "GBP"],
+	displayMode: "tooltip",
+	refreshInterval: 60,
+	dollarDefault: "USD",
+	blacklistedSites: [],
+	enableHighlight: !0,
+	isSetupComplete: !1
+}, s = "settings";
+async function c() {
+	let e = await chrome.storage.sync.get(s);
+	return {
+		...o,
+		...e[s]
+	};
 }
-const c = "refreshRates";
+//#endregion
+//#region src/background/index.ts
+var l = "refreshRates";
 chrome.runtime.onInstalled.addListener(async (e) => {
-  e.reason === "install" && chrome.tabs.create({
-    url: chrome.runtime.getURL("src/options/index.html")
-  }), await l();
+	e.reason === "install" && chrome.tabs.create({ url: chrome.runtime.getURL("src/options/index.html") }), await u();
 });
-async function l() {
-  const e = await a();
-  await chrome.alarms.clear(c), chrome.alarms.create(c, {
-    periodInMinutes: e.refreshInterval
-  });
+async function u() {
+	let e = await c();
+	await chrome.alarms.clear(l), chrome.alarms.create(l, { periodInMinutes: e.refreshInterval });
 }
 chrome.alarms.onAlarm.addListener(async (e) => {
-  if (e.name === c) {
-    const t = await a();
-    if (t.apiKey)
-      try {
-        await o(t.apiKey);
-      } catch (s) {
-        console.error("[CurrencyConverter] Failed to refresh rates:", s);
-      }
-  }
-});
-chrome.runtime.onMessage.addListener(
-  (e, t, s) => (y(e).then(s).catch((r) => {
-    s({ success: !1, error: String(r) });
-  }), !0)
-);
-async function y(e) {
-  switch (e.type) {
-    case "GET_RATES": {
-      const t = await a();
-      return t.apiKey ? { success: !0, data: await m(
-        t.apiKey,
-        t.refreshInterval
-      ) } : { success: !1, error: "API key not configured" };
-    }
-    case "REFRESH_RATES": {
-      const t = await a();
-      return t.apiKey ? { success: !0, data: await o(t.apiKey) } : { success: !1, error: "API key not configured" };
-    }
-    case "GET_SETTINGS":
-      return { success: !0, data: await a() };
-    default:
-      return { success: !1, error: "Unknown message type" };
-  }
+	if (e.name === l) {
+		let e = await c();
+		if (e.apiKey) try {
+			await n(e.apiKey);
+		} catch (e) {
+			console.error("[CurrencyConverter] Failed to refresh rates:", e);
+		}
+	}
+}), chrome.runtime.onMessage.addListener((e, t, n) => (d(e).then(n).catch((e) => {
+	n({
+		success: !1,
+		error: String(e)
+	});
+}), !0));
+async function d(e) {
+	switch (e.type) {
+		case "GET_RATES": {
+			let e = await c();
+			return e.apiKey ? {
+				success: !0,
+				data: await a(e.apiKey, e.refreshInterval)
+			} : {
+				success: !1,
+				error: "API key not configured"
+			};
+		}
+		case "REFRESH_RATES": {
+			let e = await c();
+			return e.apiKey ? {
+				success: !0,
+				data: await n(e.apiKey)
+			} : {
+				success: !1,
+				error: "API key not configured"
+			};
+		}
+		case "GET_SETTINGS": return {
+			success: !0,
+			data: await c()
+		};
+		default: return {
+			success: !1,
+			error: "Unknown message type"
+		};
+	}
 }
 chrome.storage.onChanged.addListener((e, t) => {
-  t === "sync" && e.settings && l();
+	t === "sync" && e.settings && u();
 });
+//#endregion

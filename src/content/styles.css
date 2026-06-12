@@ -1,19 +1,18 @@
 /* Currency Converter Extension - Injected Styles */
 
-/* Price wrapper with tooltip trigger */
 .cc-ext-price-wrapper {
   position: relative;
   display: inline;
 }
 
 .cc-ext-has-tooltip {
-  border-bottom: 1px dashed rgba(59, 130, 246, 0.5);
+  border-bottom: 1px dashed rgba(17, 17, 16, 0.35);
   cursor: help;
   transition: border-color 0.2s ease;
 }
 
 .cc-ext-has-tooltip:hover {
-  border-bottom-color: rgba(59, 130, 246, 1);
+  border-bottom-color: rgba(17, 17, 16, 0.7);
 }
 
 /* Tooltip card */
@@ -24,8 +23,8 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 2147483647;
-  background: #1e293b;
-  color: #f1f5f9;
+  background: #1a1917;
+  color: #f5f4f0;
   border-radius: 8px;
   padding: 8px 12px;
   font-family:
@@ -33,7 +32,7 @@
   font-size: 13px;
   line-height: 1.5;
   white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   pointer-events: none;
   opacity: 0;
   animation: cc-ext-fadeIn 0.15s ease forwards;
@@ -54,7 +53,7 @@
   transform: translateX(-50%);
   border-width: 5px;
   border-style: solid;
-  border-color: #1e293b transparent transparent transparent;
+  border-color: #1a1917 transparent transparent transparent;
 }
 
 .cc-ext-tooltip-row {
@@ -66,14 +65,14 @@
 
 .cc-ext-tooltip-currency {
   font-weight: 600;
-  color: #94a3b8;
+  color: #888780;
   font-size: 11px;
   letter-spacing: 0.5px;
 }
 
 .cc-ext-tooltip-amount {
   font-weight: 600;
-  color: #f8fafc;
+  color: #f5f4f0;
 }
 
 /* Replacement mode */
@@ -86,7 +85,11 @@
   display: none;
   margin-left: 4px;
   font-size: 0.85em;
-  opacity: 0.6;
+  background: #f1efe8;
+  color: #5f5e5a;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-weight: 500;
 }
 
 .cc-ext-el-badge {
@@ -110,26 +113,36 @@
   }
 }
 
-/* Dark mode adjustments */
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
-  .cc-ext-tooltip {
-    background: #f1f5f9;
-    color: #1e293b;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  }
-  .cc-ext-tooltip::after {
-    border-color: #f1f5f9 transparent transparent transparent;
-  }
-  .cc-ext-tooltip-currency {
-    color: #64748b;
-  }
-  .cc-ext-tooltip-amount {
-    color: #0f172a;
-  }
   .cc-ext-has-tooltip {
-    border-bottom-color: rgba(147, 197, 253, 0.5);
+    border-bottom-color: rgba(245, 244, 240, 0.3);
   }
+
   .cc-ext-has-tooltip:hover {
-    border-bottom-color: rgba(147, 197, 253, 1);
+    border-bottom-color: rgba(245, 244, 240, 0.65);
+  }
+
+  .cc-ext-tooltip {
+    background: #f5f4f0;
+    color: #111110;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .cc-ext-tooltip::after {
+    border-color: #f5f4f0 transparent transparent transparent;
+  }
+
+  .cc-ext-tooltip-currency {
+    color: #5f5e5a;
+  }
+
+  .cc-ext-tooltip-amount {
+    color: #111110;
+  }
+
+  .cc-ext-original-badge {
+    background: #2c2c2a;
+    color: #b4b2a9;
   }
 }

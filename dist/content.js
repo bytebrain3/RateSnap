@@ -1,439 +1,331 @@
-const w = {
-  $: "USD",
-  "€": "EUR",
-  "£": "GBP",
-  "¥": "JPY",
-  "₹": "INR",
-  "৳": "BDT",
-  "₩": "KRW",
-  "₺": "TRY",
-  "₽": "RUB",
-  "₱": "PHP",
-  "₪": "ILS",
-  "₫": "VND",
-  "₦": "NGN",
-  "₴": "UAH",
-  "฿": "THB",
-  zł: "PLN",
-  Kč: "CZK",
-  Ft: "HUF",
-  lei: "RON",
-  лв: "BGN",
-  kr: "SEK",
-  // also NOK, DKK, ISK — disambiguated by TLD
-  R$: "BRL",
-  "S/.": "PEN",
-  RM: "MYR",
-  Rp: "IDR",
-  "₨": "PKR",
-  Rs: "LKR",
-  KSh: "KES",
-  Fr: "CHF"
-}, g = {
-  US$: "USD",
-  "US $": "USD",
-  A$: "AUD",
-  AU$: "AUD",
-  C$: "CAD",
-  CA$: "CAD",
-  HK$: "HKD",
-  S$: "SGD",
-  NZ$: "NZD",
-  MX$: "MXN",
-  CL$: "CLP",
-  AR$: "ARS",
-  NT$: "TWD",
-  COL$: "COP",
-  "E£": "EGP"
-}, A = /* @__PURE__ */ new Set([
-  "USD",
-  "EUR",
-  "GBP",
-  "JPY",
-  "CNY",
-  "INR",
-  "BDT",
-  "AUD",
-  "CAD",
-  "CHF",
-  "HKD",
-  "SGD",
-  "SEK",
-  "KRW",
-  "NOK",
-  "NZD",
-  "MXN",
-  "ZAR",
-  "BRL",
-  "TRY",
-  "RUB",
-  "PLN",
-  "THB",
-  "IDR",
-  "MYR",
-  "PHP",
-  "CZK",
-  "ILS",
-  "CLP",
-  "PKR",
-  "AED",
-  "SAR",
-  "TWD",
-  "ARS",
-  "EGP",
-  "VND",
-  "NGN",
-  "KES",
-  "QAR",
-  "UAH",
-  "COP",
-  "RON",
-  "PEN",
-  "HUF",
-  "DKK",
-  "BGN",
-  "HRK",
-  "ISK",
-  "LKR",
-  "MMK"
-]), K = {
-  ".au": "AUD",
-  ".com.au": "AUD",
-  ".ca": "CAD",
-  ".hk": "HKD",
-  ".sg": "SGD",
-  ".nz": "NZD",
-  ".mx": "MXN",
-  ".tw": "TWD",
-  ".ar": "ARS",
-  ".cl": "CLP",
-  ".co": "COP"
-}, U = {
-  ".se": "SEK",
-  ".no": "NOK",
-  ".dk": "DKK",
-  ".is": "ISK"
+//#region src/content/currencyMap.ts
+var e = {
+	$: "USD",
+	"€": "EUR",
+	"£": "GBP",
+	"¥": "JPY",
+	"₹": "INR",
+	"৳": "BDT",
+	"₩": "KRW",
+	"₺": "TRY",
+	"₽": "RUB",
+	"₱": "PHP",
+	"₪": "ILS",
+	"₫": "VND",
+	"₦": "NGN",
+	"₴": "UAH",
+	"฿": "THB",
+	zł: "PLN",
+	Kč: "CZK",
+	Ft: "HUF",
+	lei: "RON",
+	лв: "BGN",
+	kr: "SEK",
+	R$: "BRL",
+	"S/.": "PEN",
+	RM: "MYR",
+	Rp: "IDR",
+	"₨": "PKR",
+	Rs: "LKR",
+	KSh: "KES",
+	Fr: "CHF"
+}, t = {
+	US$: "USD",
+	"US $": "USD",
+	A$: "AUD",
+	AU$: "AUD",
+	C$: "CAD",
+	CA$: "CAD",
+	HK$: "HKD",
+	S$: "SGD",
+	NZ$: "NZD",
+	MX$: "MXN",
+	CL$: "CLP",
+	AR$: "ARS",
+	NT$: "TWD",
+	COL$: "COP",
+	"E£": "EGP"
+}, n = new Set(/* @__PURE__ */ "USD.EUR.GBP.JPY.CNY.INR.BDT.AUD.CAD.CHF.HKD.SGD.SEK.KRW.NOK.NZD.MXN.ZAR.BRL.TRY.RUB.PLN.THB.IDR.MYR.PHP.CZK.ILS.CLP.PKR.AED.SAR.TWD.ARS.EGP.VND.NGN.KES.QAR.UAH.COP.RON.PEN.HUF.DKK.BGN.HRK.ISK.LKR.MMK".split(".")), r = {
+	".au": "AUD",
+	".com.au": "AUD",
+	".ca": "CAD",
+	".hk": "HKD",
+	".sg": "SGD",
+	".nz": "NZD",
+	".mx": "MXN",
+	".tw": "TWD",
+	".ar": "ARS",
+	".cl": "CLP",
+	".co": "COP"
+}, i = {
+	".se": "SEK",
+	".no": "NOK",
+	".dk": "DKK",
+	".is": "ISK"
 };
-function M(e) {
-  const r = window.location.hostname;
-  for (const [t, n] of Object.entries(K))
-    if (r.endsWith(t)) return n;
-  return e || "USD";
+function a(e) {
+	let t = window.location.hostname;
+	for (let [e, n] of Object.entries(r)) if (t.endsWith(e)) return n;
+	return e || "USD";
 }
-function v() {
-  const e = window.location.hostname;
-  for (const [r, t] of Object.entries(U))
-    if (e.endsWith(r)) return t;
-  return "SEK";
+function o() {
+	let e = window.location.hostname;
+	for (let [t, n] of Object.entries(i)) if (e.endsWith(t)) return n;
+	return "SEK";
 }
-const G = String.raw`\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?`, H = String.raw`\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?`, B = String.raw`\d+(?:[.,]\d{1,2})?`, T = `(?:${G}|${H}|${B})`, j = Object.keys(w).concat(Object.keys(g)).sort((e, r) => r.length - e.length).map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), k = j.join("|"), L = Array.from(A).join("|"), E = new RegExp(
-  `(?:(?<prefixSymbol>${k})\\s?(?<prefixNum>${T})|(?<prefixCode>${L})\\s(?<prefixCodeNum>${T})|(?<suffixNum>${T})\\s?(?<suffixCode>${L}))`,
-  "g"
-);
-function b(e) {
-  const r = e.lastIndexOf("."), t = e.lastIndexOf(",");
-  return r > -1 && t > -1 ? r > t ? parseFloat(e.replace(/,/g, "")) : parseFloat(e.replace(/\./g, "").replace(",", ".")) : t > -1 && e.indexOf(",") === t ? e.substring(t + 1).length <= 2 ? parseFloat(e.replace(",", ".")) : parseFloat(e.replace(",", "")) : parseFloat(e.replace(/,/g, ""));
+var s = `(?:${String.raw`\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?`}|${String.raw`\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?`}|${String.raw`\d+(?:[.,]\d{1,2})?`})`, c = Object.keys(e).concat(Object.keys(t)).sort((e, t) => t.length - e.length).map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), l = Array.from(n).join("|"), u = RegExp(`(?:(?<prefixSymbol>${c})\\s?(?<prefixNum>${s})|(?<prefixCode>${l})\\s(?<prefixCodeNum>${s})|(?<suffixNum>${s})\\s?(?<suffixCode>${l}))`, "g");
+function d(e) {
+	let t = e.lastIndexOf("."), n = e.lastIndexOf(",");
+	return t > -1 && n > -1 ? parseFloat(t > n ? e.replace(/,/g, "") : e.replace(/\./g, "").replace(",", ".")) : n > -1 && e.indexOf(",") === n ? e.substring(n + 1).length <= 2 ? parseFloat(e.replace(",", ".")) : parseFloat(e.replace(",", "")) : parseFloat(e.replace(/,/g, ""));
 }
-function I(e, r) {
-  return g[e] ? g[e] : e === "$" ? M(r) : e === "kr" ? v() : w[e] || "USD";
+function f(n, r) {
+	return t[n] ? t[n] : n === "$" ? a(r) : n === "kr" ? o() : e[n] || "USD";
 }
-const Y = /* @__PURE__ */ new Set([
-  "SCRIPT",
-  "STYLE",
-  "NOSCRIPT",
-  "IFRAME",
-  "OBJECT",
-  "EMBED",
-  "SVG",
-  "CANVAS",
-  "VIDEO",
-  "AUDIO",
-  "INPUT",
-  "TEXTAREA",
-  "SELECT",
-  "CODE",
-  "PRE"
-]), W = [
-  '[class*="price"]',
-  '[itemprop="price"]',
-  "[data-price]",
-  '[class*="amount"]',
-  '[class*="cost"]'
-].join(","), m = "data-cc-processed";
-function X(e, r) {
-  const t = [], n = document.createTreeWalker(e, NodeFilter.SHOW_TEXT, {
-    acceptNode(c) {
-      const o = c.parentElement;
-      if (!o || Y.has(o.tagName) || o.hasAttribute(m) || o.closest(`[${m}]`) || o.closest(".cc-ext-tooltip, .cc-ext-converted"))
-        return NodeFilter.FILTER_REJECT;
-      if (o.offsetParent === null && o.tagName !== "BODY") {
-        const i = window.getComputedStyle(o).position;
-        if (i !== "fixed" && i !== "sticky")
-          return NodeFilter.FILTER_REJECT;
-      }
-      return (c.textContent || "").trim().length < 2 ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
-    }
-  });
-  let s;
-  for (; s = n.nextNode(); ) {
-    const c = s.textContent || "", o = new RegExp(E.source, E.flags);
-    let a;
-    for (; (a = o.exec(c)) !== null; ) {
-      const i = a.groups;
-      let l, u;
-      if (i.prefixSymbol && i.prefixNum)
-        l = I(i.prefixSymbol, r), u = i.prefixNum;
-      else if (i.prefixCode && i.prefixCodeNum)
-        l = i.prefixCode, u = i.prefixCodeNum;
-      else if (i.suffixNum && i.suffixCode)
-        l = i.suffixCode, u = i.suffixNum;
-      else
-        continue;
-      if (!A.has(l)) continue;
-      const d = b(u);
-      isNaN(d) || d <= 0 || d > 999999999999 || t.push({
-        node: s,
-        currency: l,
-        amount: d,
-        originalText: a[0],
-        startOffset: a.index,
-        endOffset: a.index + a[0].length
-      });
-    }
-  }
-  return t;
+//#endregion
+//#region src/content/priceDetector.ts
+var p = new Set([
+	"SCRIPT",
+	"STYLE",
+	"NOSCRIPT",
+	"IFRAME",
+	"OBJECT",
+	"EMBED",
+	"SVG",
+	"CANVAS",
+	"VIDEO",
+	"AUDIO",
+	"INPUT",
+	"TEXTAREA",
+	"SELECT",
+	"CODE",
+	"PRE"
+]), m = [
+	"[class*=\"price\"]",
+	"[itemprop=\"price\"]",
+	"[data-price]",
+	"[class*=\"amount\"]",
+	"[class*=\"cost\"]"
+].join(","), h = "data-cc-processed";
+function g(e, t) {
+	let r = [], i = document.createTreeWalker(e, NodeFilter.SHOW_TEXT, { acceptNode(e) {
+		let t = e.parentElement;
+		if (!t || p.has(t.tagName) || t.hasAttribute("data-cc-processed") || t.closest("[data-cc-processed]") || t.closest(".cc-ext-tooltip, .cc-ext-converted")) return NodeFilter.FILTER_REJECT;
+		if (t.offsetParent === null && t.tagName !== "BODY") {
+			let e = window.getComputedStyle(t).position;
+			if (e !== "fixed" && e !== "sticky") return NodeFilter.FILTER_REJECT;
+		}
+		return (e.textContent || "").trim().length < 2 ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+	} }), a;
+	for (; a = i.nextNode();) {
+		let e = a.textContent || "", i = new RegExp(u.source, u.flags), o;
+		for (; (o = i.exec(e)) !== null;) {
+			let e = o.groups, i, s;
+			if (e.prefixSymbol && e.prefixNum) i = f(e.prefixSymbol, t), s = e.prefixNum;
+			else if (e.prefixCode && e.prefixCodeNum) i = e.prefixCode, s = e.prefixCodeNum;
+			else if (e.suffixNum && e.suffixCode) i = e.suffixCode, s = e.suffixNum;
+			else continue;
+			if (!n.has(i)) continue;
+			let c = d(s);
+			isNaN(c) || c <= 0 || c > 999999999999 || r.push({
+				node: a,
+				currency: i,
+				amount: c,
+				originalText: o[0],
+				startOffset: o.index,
+				endOffset: o.index + o[0].length
+			});
+		}
+	}
+	return r;
 }
-function J(e, r) {
-  if (!(e instanceof Element)) return [];
-  const t = [], n = e.querySelectorAll(W);
-  for (const s of n) {
-    if (s.hasAttribute(m) || s.querySelector(`[${m}]`) || s.closest(".cc-ext-tooltip, .cc-ext-converted, .cc-ext-price-wrapper"))
-      continue;
-    const c = (s.textContent || "").replace(/\s+/g, " ").trim();
-    if (!c || c.length < 2 || c.length > 80) continue;
-    const o = new RegExp(E.source, E.flags);
-    let a;
-    for (; (a = o.exec(c)) !== null; ) {
-      const i = a.groups;
-      let l = "", u = "";
-      if (i.prefixSymbol && i.prefixNum)
-        l = I(i.prefixSymbol, r), u = i.prefixNum;
-      else if (i.prefixCode && i.prefixCodeNum)
-        l = i.prefixCode, u = i.prefixCodeNum;
-      else if (i.suffixNum && i.suffixCode)
-        l = i.suffixCode, u = i.suffixNum;
-      else continue;
-      if (!A.has(l)) continue;
-      const d = b(u);
-      if (!(isNaN(d) || d <= 0 || d > 999999999999)) {
-        t.push({
-          node: null,
-          element: s,
-          currency: l,
-          amount: d,
-          originalText: a[0],
-          startOffset: a.index,
-          endOffset: a.index + a[0].length
-        });
-        break;
-      }
-    }
-  }
-  return t;
+function _(e, t) {
+	if (!(e instanceof Element)) return [];
+	let r = [], i = e.querySelectorAll(m);
+	for (let e of i) {
+		if (e.hasAttribute("data-cc-processed") || e.querySelector("[data-cc-processed]") || e.closest(".cc-ext-tooltip, .cc-ext-converted, .cc-ext-price-wrapper")) continue;
+		let i = (e.textContent || "").replace(/\s+/g, " ").trim();
+		if (!i || i.length < 2 || i.length > 80) continue;
+		let a = new RegExp(u.source, u.flags), o;
+		for (; (o = a.exec(i)) !== null;) {
+			let i = o.groups, a = "", s = "";
+			if (i.prefixSymbol && i.prefixNum) a = f(i.prefixSymbol, t), s = i.prefixNum;
+			else if (i.prefixCode && i.prefixCodeNum) a = i.prefixCode, s = i.prefixCodeNum;
+			else if (i.suffixNum && i.suffixCode) a = i.suffixCode, s = i.suffixNum;
+			else continue;
+			if (!n.has(a)) continue;
+			let c = d(s);
+			if (!(isNaN(c) || c <= 0 || c > 999999999999)) {
+				r.push({
+					node: null,
+					element: e,
+					currency: a,
+					amount: c,
+					originalText: o[0],
+					startOffset: o.index,
+					endOffset: o.index + o[0].length
+				});
+				break;
+			}
+		}
+	}
+	return r;
 }
-function q(e, r, t, n, s) {
-  if (r === t) return e;
-  const c = r === s ? 1 : n[r], o = t === s ? 1 : n[t];
-  return !c || !o ? NaN : e / c * o;
+//#endregion
+//#region src/content/converter.ts
+function v(e, t, n, r, i) {
+	if (t === n) return e;
+	let a = t === i ? 1 : r[t], o = n === i ? 1 : r[n];
+	return !a || !o ? NaN : e / a * o;
 }
-function P(e, r, t, n, s) {
-  return t.filter((c) => c !== r).map((c) => {
-    const o = q(e, r, c, n, s);
-    return {
-      targetCurrency: c,
-      amount: o,
-      formatted: V(o, c)
-    };
-  }).filter((c) => !isNaN(c.amount));
+function y(e, t, n, r, i) {
+	return n.filter((e) => e !== t).map((n) => {
+		let a = v(e, t, n, r, i);
+		return {
+			targetCurrency: n,
+			amount: a,
+			formatted: b(a, n)
+		};
+	}).filter((e) => !isNaN(e.amount));
 }
-function V(e, r) {
-  try {
-    return new Intl.NumberFormat(void 0, {
-      style: "currency",
-      currency: r,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }).format(e);
-  } catch {
-    return `${r} ${e.toFixed(2)}`;
-  }
+function b(e, t) {
+	try {
+		return new Intl.NumberFormat(void 0, {
+			style: "currency",
+			currency: t,
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 2
+		}).format(e);
+	} catch {
+		return `${t} ${e.toFixed(2)}`;
+	}
 }
-const D = "cc-ext-tooltip", Z = "cc-ext-converted", h = "cc-ext-price-wrapper", y = "data-cc-original", _ = "data-cc-currency";
-function $(e, r, t, n, s) {
-  for (const o of e) {
-    if (!o.element) continue;
-    const a = o.element;
-    if (a.hasAttribute(m)) continue;
-    const i = P(
-      o.amount,
-      o.currency,
-      r,
-      t,
-      n
-    );
-    if (i.length)
-      if (a.setAttribute(m, "true"), s === "tooltip") {
-        a.classList.add("cc-ext-has-tooltip"), window.getComputedStyle(a).position === "static" && (a.style.position = "relative");
-        const l = document.createElement("span");
-        l.className = D, l.innerHTML = i.map(
-          (u) => `<span class="cc-ext-tooltip-row"><span class="cc-ext-tooltip-currency">${u.targetCurrency}</span><span class="cc-ext-tooltip-amount">${u.formatted}</span></span>`
-        ).join(""), a.appendChild(l);
-      } else {
-        const l = z(i, a);
-        if (!l) continue;
-        const u = document.createElement("span");
-        u.className = `${h} cc-ext-el-badge`, u.setAttribute(y, o.originalText), u.setAttribute(_, o.currency), u.textContent = ` -> ${l}`, a.insertAdjacentElement("afterend", u);
-      }
-  }
-  const c = /* @__PURE__ */ new Map();
-  for (const o of e) {
-    if (!o.node) continue;
-    const a = c.get(o.node) || [];
-    a.push(o), c.set(o.node, a);
-  }
-  for (const [o, a] of c) {
-    const i = [...a].sort(
-      (p, x) => x.startOffset - p.startOffset
-    ), l = o.parentElement;
-    if (!l) continue;
-    const u = o.textContent || "", d = document.createDocumentFragment();
-    let N = u.length;
-    for (const p of i) {
-      const x = P(
-        p.amount,
-        p.currency,
-        r,
-        t,
-        n
-      );
-      if (x.length === 0) continue;
-      p.endOffset < N && d.prepend(
-        document.createTextNode(u.slice(p.endOffset, N))
-      );
-      const F = ee(
-        p.originalText,
-        p.currency,
-        x,
-        s
-      );
-      d.prepend(F), N = p.startOffset;
-    }
-    N > 0 && d.prepend(document.createTextNode(u.slice(0, N))), l.setAttribute(m, "true"), l.replaceChild(d, o);
-  }
+//#endregion
+//#region src/content/display.ts
+var x = "cc-ext-tooltip", S = "cc-ext-converted", C = "cc-ext-price-wrapper", w = "data-cc-original", T = "data-cc-currency";
+function E(e, t, n, r, i) {
+	for (let a of e) {
+		if (!a.element) continue;
+		let e = a.element;
+		if (e.hasAttribute("data-cc-processed")) continue;
+		let o = y(a.amount, a.currency, t, n, r);
+		if (o.length) if (e.setAttribute(h, "true"), i === "tooltip") {
+			e.classList.add("cc-ext-has-tooltip"), window.getComputedStyle(e).position === "static" && (e.style.position = "relative");
+			let t = document.createElement("span");
+			t.className = x, t.innerHTML = o.map((e) => `<span class="cc-ext-tooltip-row"><span class="cc-ext-tooltip-currency">${e.targetCurrency}</span><span class="cc-ext-tooltip-amount">${e.formatted}</span></span>`).join(""), e.appendChild(t);
+		} else {
+			let t = D(o, e);
+			if (!t) continue;
+			let n = document.createElement("span");
+			n.className = `${C} cc-ext-el-badge`, n.setAttribute(w, a.originalText), n.setAttribute(T, a.currency), n.textContent = ` -> ${t}`, e.insertAdjacentElement("afterend", n);
+		}
+	}
+	let a = /* @__PURE__ */ new Map();
+	for (let t of e) {
+		if (!t.node) continue;
+		let e = a.get(t.node) || [];
+		e.push(t), a.set(t.node, e);
+	}
+	for (let [e, o] of a) {
+		let a = [...o].sort((e, t) => t.startOffset - e.startOffset), s = e.parentElement;
+		if (!s) continue;
+		let c = e.textContent || "", l = document.createDocumentFragment(), u = c.length;
+		for (let e of a) {
+			let a = y(e.amount, e.currency, t, n, r);
+			if (a.length === 0) continue;
+			e.endOffset < u && l.prepend(document.createTextNode(c.slice(e.endOffset, u)));
+			let o = k(e.originalText, e.currency, a, i);
+			l.prepend(o), u = e.startOffset;
+		}
+		u > 0 && l.prepend(document.createTextNode(c.slice(0, u))), s.setAttribute(h, "true"), s.replaceChild(l, e);
+	}
 }
-function z(e, r) {
-  const t = e.map((o) => o.formatted).join(" / ");
-  if (!t) return "";
-  const n = r.getBoundingClientRect().width;
-  if (!(n > 0 && n < 180)) return t;
-  const c = e[0];
-  return c ? Q(c.amount, c.targetCurrency) : t;
+function D(e, t) {
+	let n = e.map((e) => e.formatted).join(" / ");
+	if (!n) return "";
+	let r = t.getBoundingClientRect().width;
+	if (!(r > 0 && r < 180)) return n;
+	let i = e[0];
+	return i ? O(i.amount, i.targetCurrency) : n;
 }
-function Q(e, r) {
-  try {
-    return new Intl.NumberFormat(void 0, {
-      style: "currency",
-      currency: r,
-      notation: "compact",
-      maximumFractionDigits: 1
-    }).format(e);
-  } catch {
-    return `${r} ${e.toFixed(1)}`;
-  }
+function O(e, t) {
+	try {
+		return new Intl.NumberFormat(void 0, {
+			style: "currency",
+			currency: t,
+			notation: "compact",
+			maximumFractionDigits: 1
+		}).format(e);
+	} catch {
+		return `${t} ${e.toFixed(1)}`;
+	}
 }
-function ee(e, r, t, n) {
-  const s = document.createElement("span");
-  if (s.className = h, s.setAttribute(y, e), s.setAttribute(_, r), n === "tooltip") {
-    s.textContent = e, s.classList.add("cc-ext-has-tooltip");
-    const c = document.createElement("span");
-    c.className = D, c.innerHTML = t.map(
-      (o) => `<span class="cc-ext-tooltip-row"><span class="cc-ext-tooltip-currency">${o.targetCurrency}</span><span class="cc-ext-tooltip-amount">${o.formatted}</span></span>`
-    ).join(""), s.appendChild(c);
-  } else {
-    const c = t.map((a) => a.formatted).join(" / ");
-    s.classList.add(Z), s.textContent = c;
-    const o = document.createElement("span");
-    o.className = "cc-ext-original-badge", o.textContent = `(${e})`, s.appendChild(o);
-  }
-  return s;
+function k(e, t, n, r) {
+	let i = document.createElement("span");
+	if (i.className = C, i.setAttribute(w, e), i.setAttribute(T, t), r === "tooltip") {
+		i.textContent = e, i.classList.add("cc-ext-has-tooltip");
+		let t = document.createElement("span");
+		t.className = x, t.innerHTML = n.map((e) => `<span class="cc-ext-tooltip-row"><span class="cc-ext-tooltip-currency">${e.targetCurrency}</span><span class="cc-ext-tooltip-amount">${e.formatted}</span></span>`).join(""), i.appendChild(t);
+	} else {
+		let t = n.map((e) => e.formatted).join(" / ");
+		i.classList.add(S), i.textContent = t;
+		let r = document.createElement("span");
+		r.className = "cc-ext-original-badge", r.textContent = `(${e})`, i.appendChild(r);
+	}
+	return i;
 }
-function te(e = document.body) {
-  e.querySelectorAll(".cc-ext-has-tooltip").forEach((n) => {
-    var s;
-    (s = n.querySelector(`.${D}`)) == null || s.remove(), n.classList.remove("cc-ext-has-tooltip"), n.style.position = "";
-  }), e.querySelectorAll(".cc-ext-el-badge").forEach((n) => n.remove()), e.querySelectorAll(
-    `.${h}:not(.cc-ext-el-badge)`
-  ).forEach((n) => {
-    var c;
-    const s = n.getAttribute(y);
-    if (s) {
-      const o = document.createTextNode(s);
-      (c = n.parentNode) == null || c.replaceChild(o, n);
-    }
-  }), e.querySelectorAll(`[${m}]`).forEach((n) => n.removeAttribute(m));
+function A(e = document.body) {
+	e.querySelectorAll(".cc-ext-has-tooltip").forEach((e) => {
+		e.querySelector(`.${x}`)?.remove(), e.classList.remove("cc-ext-has-tooltip"), e.style.position = "";
+	}), e.querySelectorAll(".cc-ext-el-badge").forEach((e) => e.remove()), e.querySelectorAll(`.${C}:not(.cc-ext-el-badge)`).forEach((e) => {
+		let t = e.getAttribute(w);
+		if (t) {
+			let n = document.createTextNode(t);
+			e.parentNode?.replaceChild(n, e);
+		}
+	}), e.querySelectorAll(`[${h}]`).forEach((e) => e.removeAttribute(h));
 }
-let f = null, S = null, C = null, R = null;
-async function ne() {
-  const e = await chrome.runtime.sendMessage({
-    type: "GET_SETTINGS"
-  });
-  if (!(e != null && e.success) || !e.data || (f = e.data, !f.isSetupComplete)) return;
-  const r = window.location.hostname;
-  if (f.blacklistedSites.some((n) => r.includes(n)))
-    return;
-  const t = await chrome.runtime.sendMessage({ type: "GET_RATES" });
-  !(t != null && t.success) || !t.data || (S = t.data, O(document.body), oe());
+//#endregion
+//#region src/content/index.ts
+var j = null, M = null, N = null, P = null;
+async function F() {
+	let e = await chrome.runtime.sendMessage({ type: "GET_SETTINGS" });
+	if (!e?.success || !e.data || (j = e.data, !j.isSetupComplete)) return;
+	let t = window.location.hostname;
+	if (j.blacklistedSites.some((e) => t.includes(e))) return;
+	let n = await chrome.runtime.sendMessage({ type: "GET_RATES" });
+	!n?.success || !n.data || (M = n.data, I(document.body), L());
 }
-function O(e) {
-  if (!f || !S || f.targetCurrencies.length === 0) return;
-  const { dollarDefault: r, targetCurrencies: t, displayMode: n } = f, { rates: s, base: c } = S, o = J(e, r);
-  o.length > 0 && $(
-    o,
-    t,
-    s,
-    c,
-    n
-  );
-  const a = X(e, r);
-  a.length > 0 && $(a, t, s, c, n);
+function I(e) {
+	if (!j || !M || j.targetCurrencies.length === 0) return;
+	let { dollarDefault: t, targetCurrencies: n, displayMode: r } = j, { rates: i, base: a } = M, o = _(e, t);
+	o.length > 0 && E(o, n, i, a, r);
+	let s = g(e, t);
+	s.length > 0 && E(s, n, i, a, r);
 }
-function oe() {
-  C && C.disconnect(), C = new MutationObserver((e) => {
-    R && clearTimeout(R), R = setTimeout(() => {
-      const r = /* @__PURE__ */ new Set();
-      for (const t of e)
-        for (const n of t.addedNodes)
-          if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) {
-            if (n instanceof Element && (n.classList.contains("cc-ext-tooltip") || n.classList.contains("cc-ext-converted") || n.classList.contains("cc-ext-price-wrapper")))
-              continue;
-            r.add(n);
-          }
-      for (const t of r) {
-        const n = t.nodeType === Node.TEXT_NODE ? t.parentElement : t;
-        n && O(n);
-      }
-    }, 300);
-  }), C.observe(document.body, {
-    childList: !0,
-    subtree: !0
-  });
+function L() {
+	N && N.disconnect(), N = new MutationObserver((e) => {
+		P && clearTimeout(P), P = setTimeout(() => {
+			let t = /* @__PURE__ */ new Set();
+			for (let n of e) for (let e of n.addedNodes) if (e.nodeType === Node.ELEMENT_NODE || e.nodeType === Node.TEXT_NODE) {
+				if (e instanceof Element && (e.classList.contains("cc-ext-tooltip") || e.classList.contains("cc-ext-converted") || e.classList.contains("cc-ext-price-wrapper"))) continue;
+				t.add(e);
+			}
+			for (let e of t) {
+				let t = e.nodeType === Node.TEXT_NODE ? e.parentElement : e;
+				t && I(t);
+			}
+		}, 300);
+	}), N.observe(document.body, {
+		childList: !0,
+		subtree: !0
+	});
 }
-chrome.storage.onChanged.addListener((e, r) => {
-  if (r === "sync" && e.settings) {
-    const t = e.settings.newValue, n = !f || t.displayMode !== f.displayMode || t.targetCurrencies.join(",") !== f.targetCurrencies.join(",") || t.dollarDefault !== f.dollarDefault;
-    f = t, n && (te(), O(document.body));
-  }
+chrome.storage.onChanged.addListener((e, t) => {
+	if (t === "sync" && e.settings) {
+		let t = e.settings.newValue, n = !j || t.displayMode !== j.displayMode || t.targetCurrencies.join(",") !== j.targetCurrencies.join(",") || t.dollarDefault !== j.dollarDefault;
+		j = t, n && (A(), I(document.body));
+	}
+}), F().catch((e) => {
+	console.error("[CurrencyConverter] Init failed:", e);
 });
-ne().catch((e) => {
-  console.error("[CurrencyConverter] Init failed:", e);
-});
+//#endregion
